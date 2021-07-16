@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.circlett.demo.mapper.auto.UserMapper">
+
+    <!-- 查找用户信息 -->
+    <select id="selectOneByName" resultType="com.circlett.demo.model.auto.User">
+       select * from user where user_name=#{userName}
+    </select>
+
+    <!--selectById-->
+    <select id="selectById" resultType="com.circlett.demo.model.auto.User">
+       select * from user where user_id=#{userId}
+    </select>
+
+
+    <insert id="insert">
+        insert  into user (
+              user_id,
+              user_name,
+              data,
+              is_admin,
+              pass_word,
+              personlcon,
+              introduction
+
+        )
+        values
+        (
+        #{userId},
+        #{userName},
+        #{data},
+        #{isAdmin},
+        #{passWord},
+        #{personlcon},
+        #{introduction}
+
+        )
+
+    </insert>
+
+
+
+    <delete id="deleteByIds" >
+        delete FROM user WHERE user_id in
+        <foreach collection="listu" item="id" open="(" separator="," close=")">
+               #{id}
+        </foreach>
+    </delete>
+
+
+    <update id="updateByUserId">
+        update user set
+        user_name=#{userName},
+        data=#{data},
+        is_admin=#{isAdmin},
+        pass_word=#{passWord},
+        personlcon=#{personlcon},
+        introduction=#{introduction}
+         where
+           user_id=#{userId}
+
+    </update>
+
+  <!--  通过用户id批量查询-->
+  <select id="selectListByUsrId" resultType="com.circlett.demo.model.auto.User">
+     select  * from user where user_id in
+      <foreach collection="s" item="id" open="(" separator="," close=")">
+          #{id}
+      </foreach>
+  </select>
+</mapper>

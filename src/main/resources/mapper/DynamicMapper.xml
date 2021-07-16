@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.circlett.demo.mapper.auto.DynamicMapper">
+
+
+    <!--  通过用户名查询 我的动态  -->
+   <select id="selectListMyDynamic"  resultType="com.circlett.demo.utils.dynamicMyDataReturn">
+     SELECT d.dynamic_id,d.type,d.dynamic_content as text,d.dynamic_data as time,count(comment_id) as comment_nums
+     FROM (select dynamic_id,type,dynamic_content,dynamic_data from dynamic,user
+        where dynamic.user_id=`user`.user_id and `user`.user_name=#{username}) as d
+    left join comment on d.dynamic_id=comment.dynamic_id GROUP BY d.dynamic_id
+   </select>
+
+
+    <update id="updateLikes">
+        update dynamic set likes=#{likes} where dynamic_id=#{dynamicID}
+
+
+    </update>
+
+
+    <select id="selectPagelist" resultType="com.circlett.demo.utils.dynamicMyDataReturn">
+
+    SELECT
+	    d.personlcon as person_icon,
+	    d.user_name,
+	    d.zx as dynamic_id,
+	    d.type,
+	    d.dynamic_content AS text,
+	    d.dynamic_data AS time,
+	    count(comment_id) AS comment_nums,
+        d.circle_name as circle,
+        d.likes as likes_nums
+    FROM
+	(
+    SELECT
+      * ,count(lik.`status`)as likes
+    from
+		(SELECT
+			dynamic.dynamic_id as zx,
+			type,
+			dynamic_content,
+			dynamic_data,
+			`user`.personlcon,
+			`user`.user_name,
+            circle.circle_name
+		FROM
+			dynamic,
+			user,
+            circle
+		WHERE
+			dynamic.user_id = `user`.user_id
+      and circle.circle_id=dynamic.circle_id)as le
+      LEFT JOIN dynamic_like as lik on lik.liked_dynamic_id=le.zx and lik.`status`=1
+     GROUP BY le.zx
+	 )
+	 AS d
+      LEFT JOIN comment ON d.zx = comment.dynamic_id
+       GROUP BY
+	   d.likes desc
+    </select>
+
+
+<!--    多表查询  数据返回 分页 条件是circleName-->
+    <select id="selectDynamicByCirclePage" resultType="com.circlett.demo.utils.dynamicMyDataReturn">
+
+    SELECT
+	    d.personlcon as person_icon,
+	    d.user_name,
+	    d.zx as dynamic_id,
+	    d.type,
+	    d.dynamic_content AS text,
+	    d.dynamic_data AS time,
+	    count(comment_id) AS comment_nums,
+        d.circle_name as circle,
+        d.likes as likes_nums
+    FROM
+	(
+
+    SELECT
+      * ,count(lik.`status`)as likes
+    from
+		(SELECT
+			dynamic.dynamic_id as zx,
+			type,
+			dynamic_content,
+			dynamic_data,
+			`user`.personlcon,
+			`user`.user_name,
+            circle.circle_name
+		FROM
+			dynamic,
+			user,
+            circle
+		WHERE
+			dynamic.user_id = `user`.user_id
+            and circle.circle_id=dynamic.circle_id
+            and circle.circle_name=#{circleName}
+      )as le
+      LEFT JOIN dynamic_like as lik on lik.liked_dynamic_id=le.zx and lik.`status`=1
+     GROUP BY le.zx
+	 )
+	 AS d
+      LEFT JOIN comment ON d.zx = comment.dynamic_id
+       GROUP BY
+	   d.likes desc
+    </select>
+
+<!--//多表查询  数据返回 分页 条件是circleName 按时间排序-->
+	<select id="selectDynamicByTimePage" resultType="com.circlett.demo.utils.dynamicMyDataReturn">
+
+    SELECT
+	    d.personlcon as person_icon,
+	    d.user_name,
+	    d.zx as dynamic_id,
+	    d.type,
+	    d.dynamic_content AS text,
+	    d.dynamic_data AS time,
+	    count(comment_id) AS comment_nums,
+        d.circle_name as circle,
+        d.likes as likes_nums
+    FROM
+	(
+
+    SELECT
+      * ,count(lik.`status`)as likes
+    from
+		(SELECT
+			dynamic.dynamic_id as zx,
+			type,
+			dynamic_content,
+			dynamic_data,
+			`user`.personlcon,
+			`user`.user_name,
+            circle.circle_name
+		FROM
+			dynamic,
+			user,
+            circle
+		WHERE
+			dynamic.user_id = `user`.user_id
+            and circle.circle_id=dynamic.circle_id
+            and circle.circle_name=#{circleName}
+      )as le
+      LEFT JOIN dynamic_like as lik on lik.liked_dynamic_id=le.zx and lik.`status`=1
+     GROUP BY le.zx
+	 )
+	 AS d
+      LEFT JOIN comment ON d.zx = comment.dynamic_id
+       GROUP BY
+	   time desc
+    </select>
+
+
+<!--  多表查询  数据返回 QueryWrapper分页  条件是按时间排序-->
+   <select id="selectDynamicByAdminPage"  resultType="com.circlett.demo.utils.dynamicDataAdmin" >
+		select * from (
+		select
+               dynamic.dynamic_id  as dynamicID,
+               dynamic.dynamic_content as dynamicContent,
+               count(dynamic_like.id) as dynamicLikesCount,
+               count(`comment`.comment_id) as dynamicCommentCount,
+               circle.circle_name as dynamicCircleName,
+               dynamic.dynamic_data as dynamicDate,
+               dynamic.user_id as userID,
+               `user`.user_name as userName,
+               circle.circle_id as circleId,
+               dynamic.type
+               from dynamic
+               LEFT JOIN dynamic_like on dynamic.dynamic_id=dynamic_like.liked_dynamic_id
+               and dynamic_like.`status`="1"
+               LEFT JOIN  `comment` on `comment`.dynamic_id=dynamic.dynamic_id
+               LEFT JOIN user on `user`.user_id=dynamic.user_id
+               LEFT  JOIN circle on dynamic.circle_id=circle.circle_id
+               GROUP BY  dynamic.dynamic_data desc ) as b ${ew.customSqlSegment}
+
+
+	</select>
+
+
+</mapper>

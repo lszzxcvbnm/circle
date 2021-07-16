@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.circlett.demo.mapper.auto.CommentMapper">
+
+
+    <!-- 查询全部 dynamicID  -->
+   <select id="selectCommentListByDynamicId"  resultType="com.circlett.demo.model.auto.Comment">
+
+          select * from comment where dynamic_id = #{id}
+           </select>
+    
+<!--selectCommentListByUserName-->
+
+    <select id="selectCommentListByUserName"  resultType="com.circlett.demo.utils.commentDateReturn">
+
+         SELECT  c.comment_id as commentId, u.user_name ,u.personlcon as personIcon,c.comment_data as text,c.comment_conter as time
+         from `comment` as c,user as u where u.user_id=c.user_id  and u.user_name=#{username}
+           </select>
+
+</mapper>

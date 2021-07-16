@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.circlett.demo.mapper.auto.PhotoMapper">
+
+
+    <!-- 批量插入  -->
+    <insert id="insertBatch">
+           insert into photo(
+               photo_id,
+               user_id,
+               photo_string,
+               dynamic_id,
+               circle_id
+        )
+        values
+        <foreach collection="list" item="Photo" index="intex" separator=",">
+        (
+                #{Photo.photoID},
+                #{Photo.userID},
+                #{Photo.photoString},
+                #{Photo.dynamicID},
+                #{Photo.circleID}
+
+        )
+        </foreach>
+    </insert>
+<!--  通过动态id来查询图片-->
+    <select id="selectByDynamicId" resultType="String">
+
+        SELECT photo_string from photo where dynamic_id=#{dynamicID}
+    </select>
+    <!--通过动态车圈 id 来查询图片-->
+    <select id="selectByCircle" resultType="String">
+
+        SELECT photo_string from photo where circle_id=#{circleid}
+    </select>
+</mapper>

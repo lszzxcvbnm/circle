@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.circlett.demo.mapper.auto.CircleMapper">
+
+
+    <!-- 查询全部 circle  -->
+   <select id="selectAllCircleHot"  resultType="com.circlett.demo.model.auto.Circle">
+
+          select * from circle
+           </select>
+    <!--查询人数 -->
+    <select id="selectCircleUserCount"  resultType="int">
+
+           SELECT
+           Count(user_circle.user_id) as person
+           FROM
+           user_circle ,
+           circle
+           WHERE
+           user_circle.circle_id = circle.circle_id AND
+           circle.circle_id = #{id}
+           </select>
+
+    <!-- 查询热门车圈图片路径  -->
+    <select id="selectCirclePhoto"  resultType="String">
+
+       SELECT photo_string FROM photo,circle
+       where photo.user_id=circle.creator_id
+       and photo.circle_id=circle.circle_id
+       and circle.circle_id=#{id}
+       LIMIT 0,3
+
+     </select>
+
+    <!--查寻热门三个加入者的头像图片3张展示 -->
+    <select id="selectCircleUserPhoto"  resultType="String">
+          SELECT personlcon from user as u,user_circle as c
+          where u.user_id=c.user_id
+          and  c.circle_id=#{id}
+          LIMIT 0,3
+           </select>
+        <!--通过车圈名字查询相关信息-->
+    <select id="selectOneByName" resultType="com.circlett.demo.model.auto.Circle">
+        select * from circle where circle_name=#{circleName}
+
+    </select>
+    <!--selectCont-->
+
+    <select id="selectCont" resultType="int">
+
+        SELECT count(dynamic_id) from dynamic where circle_id=#{circlrId}
+
+    </select>
+
+    <select id="selectCircelName" resultType="String">
+        select circle_name from circle where
+        <foreach collection="array" item="circle" index="intex" separator="or">
+
+            circle_id=#{circle}
+        </foreach>
+
+
+    </select>
+
+</mapper>

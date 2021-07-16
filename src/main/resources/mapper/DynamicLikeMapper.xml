@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.circlett.demo.mapper.auto.DynamicLikeMapper">
+<!--保存单条数据-->
+   <insert id="save">
+       insert  into Dynamic_like(
+         id,
+         liked_dynamic_id,
+         liked_user_id,
+         status
+
+       )
+       values (
+            #{id},
+            #{likedDynamicId},
+            #{likedUserId},
+            #{status}
+
+       )
+        ON DUPLICATE KEY UPDATE
+          status=#{status}
+   </insert>
+       <!-- 批量插入或修改  -->
+
+    <insert id="saveAll1"  >
+        insert into dynamic_like(
+         id,
+         liked_dynamic_id,
+         liked_user_id,
+         status
+
+        )
+        values
+        <foreach collection="list" item="DynamicLike" index="intex" separator=",">
+            (
+            #{DynamicLike.id}
+            #{DynamicLike.likedDynamicId},
+            #{DynamicLike.likedUserId},
+            #{DynamicLike.status}
+
+            )
+            ON DUPLICATE KEY UPDATE
+            status=#{DynamicLike.status}
+        </foreach>
+    </insert>
+
+    <select id="findByLikedUserIdAndLikedDynamicId"  resultType="com.circlett.demo.model.auto.DynamicLike">
+
+        select * from dynamic_like where liked_dynamic_id=#{likedDynamicId} and liked_user_id=#{likedUserId}
+
+    </select>
+
+
+
+
+</mapper>
